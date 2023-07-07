@@ -1,0 +1,21 @@
+body {
+  text-align: center;
+}
+
+#game-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 0px auto;
+  min-width: 200px;
+  max-width: 85vh;
+  border: 1rem solid black;
+  background-color: black;
+}
+
+.cell {
+  width: 100%;
+  padding-top: 100%;
+  background-color: rebeccapurple;
+}
