@@ -1,16 +1,21 @@
 const gameBoard = (() => {
-  let gameBoard = []
+  let markerArray = [, , , , , , , ,]
   document.querySelectorAll('.cell').forEach(cell => {
     cell.addEventListener('click', () => {
-      console.log(cell)
+      cell.append(gameState.getActivePlayer().getMarkerElement())
+      gameBoard[cell.id.charAt(4)] = gameState.getActivePlayer().marker
+      gameState.checkForWinner()
+      gameState.incrementTurnCounter()
     })
-    gameBoard.push(cell)
   })
-  return { gameBoard }
+  return { markerArray }
 })()
 
 const gameState = (() => {
   let turnCounter = 0
+  const incrementTurnCounter = () => {
+    turnCounter++
+  }
   let players = []
   const addPlayer = (player) => {
     players.push(player)
@@ -20,12 +25,16 @@ const gameState = (() => {
     else return players[1]
   }
   const checkForWinner = () => { }
-  return { turnCounter, checkForWinner, addPlayer, getActivePlayer }
+  return { turnCounter, checkForWinner, addPlayer, getActivePlayer, incrementTurnCounter }
 })()
 
 const playerFactory = (player, marker) => {
-  const placeMarker = () => { console.log(`${player} plays ${marker}`) }
-  return { player, marker, placeMarker }
+  const getMarkerElement = () => {
+    let markerElement = document.createElement('p')
+    markerElement.textContent = marker
+    return markerElement
+  }
+  return { player, getMarkerElement, marker }
 }
 
 const player1 = playerFactory('player1', 'X')
