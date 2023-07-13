@@ -2,6 +2,24 @@ body {
   text-align: center;
 }
 
+#game-over {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(128, 128, 128, 0.5);
+  z-index: 999;
+}
+
+#reset {
+  width: 10em;
+}
+
 #game-board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -10,8 +28,6 @@ body {
   margin: 0px auto;
   min-width: 200px;
   max-width: 85vh;
-  border: 1rem solid black;
-  background-color: black;
 }
 
 .cell {

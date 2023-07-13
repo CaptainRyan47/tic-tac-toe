@@ -1,26 +1,50 @@
-const gameBoard = (() => {
-  let markerArray = [, , , , , , , , ,]
+const pageController = (() => {
+  let gameBoard = [, , , , , , , , ,]
   const cells = document.querySelectorAll('.cell')
   const makeMarkerElement = (marker) => {
     let markerElement = document.createElement('p')
     markerElement.textContent = marker
     return markerElement
   }
-  const resetBoard = () => {
-    markerArray.fill(null)
+  const showGameOver = () => {
+    const gameOver = document.createElement('div')
+    gameOver.id = 'game-over'
+    const makeResults = () => {
+      let result = document.createElement('h1')
+      gameState.getActivePlayer().winner ?
+        result.textContent = `${gameState.getActivePlayer().name} is the Winner!` :
+        result.textContent = "It's a tie!"
+      return result
+    }
+    const makeResetButton = () => {
+      const button = document.createElement('button')
+      button.id = 'reset'      
+      button.textContent = 'Play again'
+      button.addEventListener('click', ()=>{
+        resetPage()
+      })
+      return button
+    }
+    gameOver.append(makeResults(), makeResetButton())
+    document.querySelector('body').append(gameOver)
+  }
+  const resetPage = () => {
+    gameBoard.fill(null)
     cells.forEach(cell => {
       if (cell.querySelector('p')) cell.querySelector('p').remove()
     })
+    document.querySelector('#game-over').remove()
+    gameState.resetGame()
   }
   cells.forEach(cell => {
     cell.addEventListener('click', () => {
       if (cell.querySelector('p') != null || gameState.gameOverCheck()) return
       cell.append(makeMarkerElement(gameState.getActivePlayer().marker))
-      markerArray[cell.id.charAt(4)] = gameState.getActivePlayer().marker
-      gameState.turnController(markerArray)
+      gameBoard[cell.id.charAt(4)] = gameState.getActivePlayer().marker
+      gameState.turnController(gameBoard)
     })
   })
-  return { resetBoard }
+  return { resetPage, showGameOver }
 })()
 
 const gameState = (() => {
@@ -28,7 +52,7 @@ const gameState = (() => {
   const gameOverCheck = () => {
     return gameOver
   }
-  let turnCounter = 0
+  let turnCounter = 2
   let players = []
   const addPlayer = (player) => {
     players.push(player)
@@ -60,25 +84,24 @@ const gameState = (() => {
   const turnController = (array) => {
     if (checkForWinner(array)) gameOver = true
     if (checkForTie(array)) gameOver = true
-    if (gameOver) resetGame()
+    if (gameOver) pageController.showGameOver()
     else turnCounter++
   }
 
   const resetGame = () => {
-    gameOver = false
-    turnCounter = 0
-    gameBoard.resetBoard()
     players.forEach(player => player.winner = false)
+    turnCounter = 0
+    gameOver = false
   }
-  return { addPlayer, getActivePlayer, turnController, gameOverCheck }
+  return { addPlayer, getActivePlayer, turnController, gameOverCheck, resetGame }
 })()
 
-const playerFactory = (player, marker) => {
+const playerFactory = (name, marker) => {
   let winner = false
-  return { player, marker, winner }
+  return { name, marker, winner }
 }
 
-const player1 = playerFactory('player1', 'X')
+const player1 = playerFactory('Player 1', 'X')
 gameState.addPlayer(player1)
-const player2 = playerFactory('player2', 'O')
+const player2 = playerFactory('Player 2', 'O')
 gameState.addPlayer(player2)
