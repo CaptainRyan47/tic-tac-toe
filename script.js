@@ -1,5 +1,5 @@
 const gameBoard = (() => {
-  let markerArray = [, , , , , , , ,]
+  let markerArray = [, , , , , , , , ,]
   const makeMarkerElement = (marker) => {
     let markerElement = document.createElement('p')
     markerElement.textContent = marker
@@ -7,21 +7,21 @@ const gameBoard = (() => {
   }
   document.querySelectorAll('.cell').forEach(cell => {
     cell.addEventListener('click', () => {
-      if (cell.querySelector('p') != null) return
+      if (cell.querySelector('p') != null || gameState.gameOverCheck()) return
       cell.append(makeMarkerElement(gameState.getActivePlayer().marker))
       markerArray[cell.id.charAt(4)] = gameState.getActivePlayer().marker
-      gameState.checkForWinner(markerArray)
-      gameState.incrementTurnCounter()
+      gameState.turnController(markerArray)
     })
   })
-  return { markerArray }
+  return {}
 })()
 
 const gameState = (() => {
-  let turnCounter = 0
-  const incrementTurnCounter = () => {
-    turnCounter++
+  let gameOver = false
+  const gameOverCheck = () => {
+    return gameOver
   }
+  let turnCounter = 0
   let players = []
   const addPlayer = (player) => {
     players.push(player)
@@ -39,8 +39,23 @@ const gameState = (() => {
     if (array[3] && array[3] === array[4] && array[3] === array[5]) getActivePlayer().winner = true
     if (array[6] && array[6] === array[7] && array[6] === array[8]) getActivePlayer().winner = true
     if (array[6] && array[6] === array[4] && array[6] === array[2]) getActivePlayer().winner = true
+    return (getActivePlayer().winner)
   }
-  return { turnCounter, checkForWinner, addPlayer, getActivePlayer, incrementTurnCounter }
+
+  const checkForTie = (array) => {
+    let nullCount = 0
+    for (let i = 0; i < array.length; i++) {
+      if (!array[i]) nullCount++
+    }
+    return (nullCount === 0)
+  }
+
+  const turnController = (array) => {
+    if (checkForWinner(array)) gameOver = true
+    if (checkForTie(array)) gameOver = true
+    turnCounter++
+  }
+  return { addPlayer, getActivePlayer, turnController, gameOverCheck }
 })()
 
 const playerFactory = (player, marker) => {
