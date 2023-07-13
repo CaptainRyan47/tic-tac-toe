@@ -1,11 +1,18 @@
 const gameBoard = (() => {
   let markerArray = [, , , , , , , , ,]
+  const cells = document.querySelectorAll('.cell')
   const makeMarkerElement = (marker) => {
     let markerElement = document.createElement('p')
     markerElement.textContent = marker
     return markerElement
   }
-  document.querySelectorAll('.cell').forEach(cell => {
+  const resetBoard = () => {
+    markerArray.fill(null)
+    cells.forEach(cell => {
+      if (cell.querySelector('p')) cell.querySelector('p').remove()
+    })
+  }
+  cells.forEach(cell => {
     cell.addEventListener('click', () => {
       if (cell.querySelector('p') != null || gameState.gameOverCheck()) return
       cell.append(makeMarkerElement(gameState.getActivePlayer().marker))
@@ -13,7 +20,7 @@ const gameBoard = (() => {
       gameState.turnController(markerArray)
     })
   })
-  return {}
+  return { resetBoard }
 })()
 
 const gameState = (() => {
@@ -53,7 +60,15 @@ const gameState = (() => {
   const turnController = (array) => {
     if (checkForWinner(array)) gameOver = true
     if (checkForTie(array)) gameOver = true
-    turnCounter++
+    if (gameOver) resetGame()
+    else turnCounter++
+  }
+
+  const resetGame = () => {
+    gameOver = false
+    turnCounter = 0
+    gameBoard.resetBoard()
+    players.forEach(player => player.winner = false)
   }
   return { addPlayer, getActivePlayer, turnController, gameOverCheck }
 })()
