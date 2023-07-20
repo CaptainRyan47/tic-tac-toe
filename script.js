@@ -22,10 +22,21 @@ const pageController = (() => {
       button.textContent = 'Play again'
       button.addEventListener('click', () => {
         resetPage()
+        gameState.resetGame()
       })
       return button
     }
-    gameOver.append(makeResults(), makeResetButton())
+    const makeNewGameButton = () => {
+      const button = document.createElement('button')
+      button.id = 'new'
+      button.textContent = 'New Game'
+      button.addEventListener('click', () => {
+        resetPage()
+        showStartScreen()
+      })
+      return button
+    }
+    gameOver.append(makeResults(), makeResetButton(), makeNewGameButton())
     document.querySelector('body').append(gameOver)
   }
   const showStartScreen = () => {
@@ -44,9 +55,11 @@ const pageController = (() => {
     const startButton = document.createElement('button')
     startButton.textContent = 'Start Game'
     startButton.addEventListener('click', () => {
+      gameState.resetPlayers()
       gameState.addPlayer(playerFactory(player1.value, 'X'))
       gameState.addPlayer(playerFactory(player2.value, 'O'))
       resetPage()
+      gameState.resetGame()
     })
     startScreen.append(title, player1, player2, startButton)
     document.querySelector('body').append(startScreen)
@@ -57,7 +70,6 @@ const pageController = (() => {
       if (cell.querySelector('p')) cell.querySelector('p').remove()
     })
     document.querySelector('.full-screen').remove()
-    gameState.resetGame()
   }
   cells.forEach(cell => {
     cell.addEventListener('click', () => {
@@ -67,7 +79,7 @@ const pageController = (() => {
       gameState.turnController(gameBoard)
     })
   })
-  return { resetPage, showGameOver, showStartScreen }
+  return { showStartScreen, showGameOver }
 })()
 
 const gameState = (() => {
@@ -79,6 +91,9 @@ const gameState = (() => {
   let players = []
   const addPlayer = (player) => {
     players.push(player)
+  }
+  const resetPlayers = () => {
+    while (players.length > 0) players.pop()
   }
   const getActivePlayer = () => {
     if (turnCounter % 2 === 0) return players[0]
@@ -116,7 +131,7 @@ const gameState = (() => {
     turnCounter = 0
     gameOver = false
   }
-  return { addPlayer, getActivePlayer, turnController, gameOverCheck, resetGame }
+  return { addPlayer, getActivePlayer, turnController, gameOverCheck, resetGame, resetPlayers }
 })()
 
 const playerFactory = (name, marker) => {
