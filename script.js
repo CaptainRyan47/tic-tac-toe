@@ -8,7 +8,7 @@ const pageController = (() => {
   }
   const showGameOver = () => {
     const gameOver = document.createElement('div')
-    gameOver.id = 'game-over'
+    gameOver.className = 'full-screen'
     const makeResults = () => {
       let result = document.createElement('h1')
       gameState.getActivePlayer().winner ?
@@ -18,9 +18,9 @@ const pageController = (() => {
     }
     const makeResetButton = () => {
       const button = document.createElement('button')
-      button.id = 'reset'      
+      button.id = 'reset'
       button.textContent = 'Play again'
-      button.addEventListener('click', ()=>{
+      button.addEventListener('click', () => {
         resetPage()
       })
       return button
@@ -28,12 +28,35 @@ const pageController = (() => {
     gameOver.append(makeResults(), makeResetButton())
     document.querySelector('body').append(gameOver)
   }
+  const showStartScreen = () => {
+    const startScreen = document.createElement('div')
+    startScreen.className = 'full-screen'
+
+    const title = document.createElement('h1')
+    title.id = 'title'
+    title.textContent = `Tic Tac Toe`
+
+    const player1 = document.createElement('input')
+    player1.setAttribute('value', 'Player 1')
+    const player2 = document.createElement('input')
+    player2.setAttribute('value', 'Player 2')
+
+    const startButton = document.createElement('button')
+    startButton.textContent = 'Start Game'
+    startButton.addEventListener('click', () => {
+      gameState.addPlayer(playerFactory(player1.value, 'X'))
+      gameState.addPlayer(playerFactory(player2.value, 'O'))
+      resetPage()
+    })
+    startScreen.append(title, player1, player2, startButton)
+    document.querySelector('body').append(startScreen)
+  }
   const resetPage = () => {
     gameBoard.fill(null)
     cells.forEach(cell => {
       if (cell.querySelector('p')) cell.querySelector('p').remove()
     })
-    document.querySelector('#game-over').remove()
+    document.querySelector('.full-screen').remove()
     gameState.resetGame()
   }
   cells.forEach(cell => {
@@ -44,7 +67,7 @@ const pageController = (() => {
       gameState.turnController(gameBoard)
     })
   })
-  return { resetPage, showGameOver }
+  return { resetPage, showGameOver, showStartScreen }
 })()
 
 const gameState = (() => {
@@ -101,7 +124,4 @@ const playerFactory = (name, marker) => {
   return { name, marker, winner }
 }
 
-const player1 = playerFactory('Player 1', 'X')
-gameState.addPlayer(player1)
-const player2 = playerFactory('Player 2', 'O')
-gameState.addPlayer(player2)
+pageController.showStartScreen()
