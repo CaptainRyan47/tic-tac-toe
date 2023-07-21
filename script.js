@@ -87,7 +87,7 @@ const gameState = (() => {
   const gameOverCheck = () => {
     return gameOver
   }
-  let turnCounter = 2
+  let turnCounter = 0
   let players = []
   const addPlayer = (player) => {
     players.push(player)
